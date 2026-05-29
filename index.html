@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>医疗AI转行助手</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f7f7f5;--bg3:#f0eeea;
+  --text:#1a1a1a;--text2:#666;--text3:#999;
+  --border:rgba(0,0,0,0.12);--border2:rgba(0,0,0,0.2);
+  --success:#1D9E75;--warning:#EF9F27;--danger:#E24B4A;
+  --info-bg:#EFF6FF;--info-text:#185FA5;
+  --radius:8px;--radius-lg:12px
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
+  --text:#f5f5f0;--text2:#aaa;--text3:#666;
+  --border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.22);
+  --info-bg:#0c2340;--info-text:#85B7EB
+}}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB',sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;padding:1.5rem 1rem}
+.wrap{max-width:780px;margin:0 auto}
+.header{margin-bottom:1.5rem;text-align:center}
+.header h1{font-size:22px;font-weight:500;margin-bottom:6px}
+.header p{font-size:14px;color:var(--text2);line-height:1.5}
+.global-inputs{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem}
+.gi-label{font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.gi-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.gi-row,.row-2{grid-template-columns:1fr}}
+.fl{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:6px}
+.mode-tabs{display:flex;gap:3px;margin-bottom:7px;flex-wrap:wrap}
+.mt{padding:4px 11px;font-size:12px;cursor:pointer;border:0.5px solid var(--border);background:none;color:var(--text2);font-family:inherit;border-radius:var(--radius);transition:all .12s}
+.mt.active{background:var(--bg2);color:var(--text);font-weight:500;border-color:var(--border2)}
+textarea,input[type=text],select{width:100%;padding:9px 12px;font-size:14px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-family:inherit;resize:vertical;transition:border-color .15s}
+textarea:focus,input[type=text]:focus,select:focus{outline:none;border-color:var(--border2)}
+.upload-zone{border:0.5px dashed var(--border2);border-radius:var(--radius);padding:.75rem 1rem;background:var(--bg2);cursor:pointer;transition:border-color .15s}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--text2)}
+.uz-inner{display:flex;align-items:center;gap:8px;color:var(--text2);font-size:13px}
+.uz-inner i{font-size:18px;flex-shrink:0}
+.uz-hint{font-size:11px;color:var(--text3);margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:var(--bg);border:0.5px solid var(--border);border-radius:20px;font-size:12px;color:var(--text2)}
+.chip button{border:none;background:none;cursor:pointer;color:var(--text3);padding:0;font-size:14px;line-height:1;font-family:inherit}
+.chip button:hover{color:var(--text)}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem}
+.tabs{display:flex;gap:2px;border-bottom:0.5px solid var(--border);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:14px;cursor:pointer;border:none;background:none;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s;font-family:inherit;white-space:nowrap}
+.tab.active{color:var(--text);border-bottom-color:var(--text);font-weight:500}
+.tab:hover:not(.active){color:var(--text)}
+.panel{display:none}.panel.active{display:block}
+.form-row{margin-bottom:1rem}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{padding:9px 18px;font-size:14px;font-weight:500;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);cursor:pointer;transition:background .15s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--bg2)}
+.btn-primary{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.action-row{display:flex;gap:8px;flex-wrap:wrap}
+.result-box{margin-top:1.25rem;padding:1.25rem;background:var(--bg2);border-radius:var(--radius-lg);border:0.5px solid var(--border);font-size:14px;line-height:1.75;color:var(--text)}
+.result-box h3{font-size:15px;font-weight:500;margin:14px 0 6px;color:var(--text)}
+.result-box h3:first-child{margin-top:0}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;margin-right:7px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:1.25rem}
+.info-card{padding:.875rem 1rem;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg)}
+.info-card h4{font-size:14px;font-weight:500;margin-bottom:5px}
+.info-card p{font-size:13px;color:var(--text2);line-height:1.55}
+.tag{display:inline-block;padding:2px 9px;font-size:11px;border-radius:20px;background:var(--bg2);color:var(--text2);border:0.5px solid var(--border);margin:2px}
+.score-bar-wrap{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:0.5px solid var(--border)}
+.score-bar-track{flex:1;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;border:0.5px solid var(--border)}
+.score-bar-fill{height:100%;border-radius:3px}
+.info-banner{background:var(--info-bg);border-radius:var(--radius);padding:.75rem 1rem;font-size:13px;color:var(--info-text);display:flex;gap:8px;align-items:flex-start;margin-top:1rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>🏥 医疗AI转行助手</h1>
+    <p>面向医学生、医生、护士等医学背景人群<br>助力转行医疗 / 大健康 AI 行业</p>
+  </div>
+  </div>
+
+
+  <div class="global-inputs">
+    <div class="gi-label"><i class="ti ti-database" style="font-size:15px"></i>填写一次，四个功能共用</div>
+    <div class="gi-row">
+      <div>
+        <label class="fl">岗位 JD</label>
+        <div class="mode-tabs">
+          <button class="mt active" onclick="setMode('jd','text',this)">粘贴文字</button>
+          <button class="mt" onclick="setMode('jd','img',this)">上传图片</button>
+        </div>
+        <div id="jd-text-area"><textarea id="jd-text" rows="6" placeholder="将岗位描述粘贴到这里..."></textarea></div>
+        <div id="jd-img-area" style="display:none">
+          <div class="upload-zone" id="jd-dz" ondragover="onDrag(event,'jd-dz')" ondragleave="offDrag('jd-dz')" ondrop="onDrop(event,'jd')" onclick="document.getElementById('jd-file').click()">
+            <div class="uz-inner"><i class="ti ti-photo"></i><div><div>点击或拖入图片（支持多张）</div><div class="uz-hint">JPG / PNG / WEBP，每张≤5MB</div></div></div>
+          </div>
+          <input type="file" id="jd-file" accept="image/*" multiple style="display:none" onchange="addImgFiles(Array.from(event.target.files),'jd');event.target.value=''">
+          <div class="chips" id="jd-chips"></div>
+        </div>
+      </div>
+      <div>
+        <label class="fl">你的简历</label>
+        <div class="mode-tabs">
+          <button class="mt active" onclick="setMode('cv','text',this)">粘贴文字</button>
+          <button class="mt" onclick="setMode('cv','file',this)">上传文件</button>
+          <button class="mt" onclick="setMode('cv','img',this)">上传图片</button>
+        </div>
+        <div id="cv-text-area"><textarea id="cv-text" rows="6" placeholder="粘贴简历文字内容..."></textarea></div>
+        <div id="cv-file-area" style="display:none">
+          <div class="upload-zone" id="cv-dz" ondragover="onDrag(event,'cv-dz')" ondragleave="offDrag('cv-dz')" ondrop="onDrop(event,'cv','file')" onclick="document.getElementById('cv-file').click()">
+            <div class="uz-inner"><i class="ti ti-file-upload"></i><div><div>点击或拖入文件</div><div class="uz-hint">支持 PDF、Word（.docx）</div></div></div>
+          </div>
+          <input type="file" id="cv-file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleDocFile(event,'cv');event.target.value=''">
+          <div id="cv-file-status" style="margin-top:7px;font-size:13px;color:var(--text2)"></div>
+        </div>
+        <div id="cv-img-area" style="display:none">
+          <div class="upload-zone" id="cv-img-dz" ondragover="onDrag(event,'cv-img-dz')" ondragleave="offDrag('cv-img-dz')" ondrop="onDrop(event,'cv-img')" onclick="document.getElementById('cv-img-file').click()">
+            <div class="uz-inner"><i class="ti ti-photo"></i><div><div>上传简历截图（支持多张）</div><div class="uz-hint">JPG / PNG / WEBP</div></div></div>
+          </div>
+          <input type="file" id="cv-img-file" accept="image/*" multiple style="display:none" onchange="addImgFiles(Array.from(event.target.files),'cv-img');event.target.value=''">
+          <div class="chips" id="cv-img-chips"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('match')">JD 匹配分析</button>
+      <button class="tab" onclick="switchTab('resume')">简历改写</button>
+      <button class="tab" onclick="switchTab('interview')">面试预测</button>
+      <button class="tab" onclick="switchTab('guide')">岗位科普</button>
+    </div>
+
+    <div id="tab-match" class="panel active">
+      <div class="action-row">
+        <button class="btn btn-primary" id="match-btn" onclick="runMatch()"><i class="ti ti-search"></i> 开始分析</button>
+      </div>
+      <div id="match-result" class="result-box" style="display:none"></div>
+    </div>
+
+    <div id="tab-resume" class="panel">
+      <div class="form-row">
+        <label class="fl">希望突出的方向</label>
+        <input type="text" id="resume-focus" placeholder="例如：医疗AI产品经理、临床数据分析师...">
+      </div>
+      <div class="action-row">
+        <button class="btn btn-primary" id="resume-btn" onclick="runResume()"><i class="ti ti-sparkles"></i> 一键生成简历</button>
+      </div>
+      <div id="resume-loading" style="display:none;margin-top:1.25rem;text-align:center;padding:2rem;background:var(--bg2);border-radius:var(--radius-lg);border:0.5px solid var(--border)">
+        <span class="spinner"></span><span style="font-size:14px;color:var(--text2)">AI 正在改写简历，请稍候（约20秒）...</span>
+      </div>
+      <div id="resume-output" style="display:none;margin-top:1.25rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+          <span style="font-size:13px;font-weight:500;color:var(--text2)">改写完成 · 预览如下</span>
+          <button class="btn btn-primary" onclick="downloadResume()"><i class="ti ti-download"></i> 下载 Word 简历</button>
+        </div>
+        <div id="resume-preview" style="background:#fff;border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:2rem 2.25rem;color:#1a1a1a;font-family:'微软雅黑',Arial,sans-serif;line-height:1.7;font-size:14px"></div>
+        <div id="resume-notes" class="result-box" style="display:none;margin-top:10px"></div>
+      </div>
+    </div>
+
+    <div id="tab-interview" class="panel">
+      <div class="row-2">
+        <div class="form-row">
+          <label class="fl">背景补充（可选）</label>
+          <input type="text" id="interview-bg" placeholder="例如：急诊科3年，想转产品">
+        </div>
+        <div class="form-row">
+          <label class="fl">面试轮次</label>
+          <select id="interview-round">
+            <option value="hr">HR 初筛</option>
+            <option value="tech">技术 / 业务面</option>
+            <option value="final">终面 / 总监面</option>
+          </select>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-primary" id="interview-btn" onclick="runInterview()"><i class="ti ti-message-circle"></i> 生成面试题</button>
+      </div>
+      <div id="interview-result" class="result-box" style="display:none"></div>
+    </div>
+
+    <div id="tab-guide" class="panel">
+      <div class="card-grid" id="guide-cards"></div>
+      <div class="form-row">
+        <label class="fl">想深入了解哪个方向？</label>
+        <input type="text" id="guide-query" placeholder="例如：产品经理需要什么技能？国内薪资行情如何？">
+      </div>
+      <div class="action-row">
+        <button class="btn btn-primary" id="guide-btn" onclick="runGuide()"><i class="ti ti-bulb"></i> AI 解答</button>
+      </div>
+      <div id="guide-result" class="result-box" style="display:none"></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:12px;color:var(--text3);margin-top:1rem">
+    Powered by Claude · 仅供参考，不构成求职担保
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+if(typeof pdfjsLib!=='undefined') pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+
+
+const G={jd:{mode:'text',imgs:[]},cv:{mode:'text',imgs:[],docText:''},'cv-img':{imgs:[]}};
+
+function switchTab(n){
+  ['match','resume','interview','guide'].forEach((x,i)=>document.querySelectorAll('.tab')[i].classList.toggle('active',x===n));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+}
+function setMode(key,mode,btn){
+  btn.closest('.mode-tabs').querySelectorAll('.mt').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['text','file','img'].map(m=>document.getElementById(key+'-'+m+'-area')).filter(Boolean).forEach(el=>el.style.display='none');
+  const t=document.getElementById(key+'-'+mode+'-area');
+  if(t) t.style.display='block';
+  if(G[key]) G[key].mode=mode;
+}
+function onDrag(e,id){e.preventDefault();document.getElementById(id)?.classList.add('drag-over')}
+function offDrag(id){document.getElementById(id)?.classList.remove('drag-over')}
+function onDrop(e,key,type){
+  e.preventDefault();
+  ['jd-dz','cv-dz','cv-img-dz'].forEach(id=>document.getElementById(id)?.classList.remove('drag-over'));
+  const files=Array.from(e.dataTransfer.files);
+  if(type==='file') handleDocFileList(files,'cv'); else addImgFiles(files,key);
+}
+function addImgFiles(files,key){
+  const s=G[key]||(G[key]={imgs:[]});
+  files.filter(f=>f.type.startsWith('image/')).forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{s.imgs.push({name:f.name,b64:ev.target.result.split(',')[1],type:f.type});renderChips(key);};
+    r.readAsDataURL(f);
+  });
+}
+function renderChips(key){
+  const el=document.getElementById(key+'-chips');if(!el)return;
+  el.innerHTML=(G[key]?.imgs||[]).map((img,i)=>`<div class="chip"><i class="ti ti-photo" style="font-size:12px"></i>${img.name}<button onclick="removeImg('${key}',${i})" aria-label="删除">×</button></div>`).join('');
+}
+function removeImg(key,i){G[key].imgs.splice(i,1);renderChips(key);}
+async function handleDocFile(e,key){const f=e.target.files[0];if(f) handleDocFileList([f],key);}
+async function handleDocFileList(files,key){
+  const f=files[0];if(!f)return;
+  const el=document.getElementById(key+'-file-status');
+  if(el) el.innerHTML='<span class="spinner"></span>解析中...';
+  try{
+    let text='';
+    if(f.name.endsWith('.docx')||f.type.includes('wordprocessingml')){
+      const buf=await f.arrayBuffer();const res=await mammoth.extractRawText({arrayBuffer:buf});text=res.value;
+    }else{
+      const buf=await f.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+      for(let i=1;i<=pdf.numPages;i++){const pg=await pdf.getPage(i);const tc=await pg.getTextContent();text+=tc.items.map(s=>s.str).join(' ')+'\n';}
+    }
+    G[key].docText=text;
+    if(el) el.innerHTML=`<div class="chip" style="display:inline-flex"><i class="ti ti-check" style="font-size:12px;color:var(--success)"></i>${f.name} · ${text.length}字</div>`;
+  }catch(err){if(el)el.textContent='解析失败，请换格式重试';}
+}
+function getJdPayload(){
+  const txt=document.getElementById('jd-text')?.value?.trim();
+  const imgs=G.jd?.imgs||[];
+  if(G.jd.mode==='text'&&txt) return [{type:'text',text:txt}];
+  if(G.jd.mode==='img'&&imgs.length){const c=[];imgs.forEach(img=>c.push({type:'image',source:{type:'base64',media_type:img.type,data:img.b64}}));c.push({type:'text',text:'请识别提取以上图片中的岗位JD文字内容'});return c;}
+  return null;
+}
+function getCvPayload(){
+  const txt=document.getElementById('cv-text')?.value?.trim();
+  const docText=G.cv?.docText;
+  const imgs=G['cv-img']?.imgs||[];
+  if(G.cv.mode==='text'&&txt) return [{type:'text',text:txt}];
+  if(G.cv.mode==='file'&&docText) return [{type:'text',text:docText}];
+  if(G.cv.mode==='img'&&imgs.length){const c=[];imgs.forEach(img=>c.push({type:'image',source:{type:'base64',media_type:img.type,data:img.b64}}));c.push({type:'text',text:'请识别提取以上图片中的简历内容'});return c;}
+  return null;
+}
+async function callClaude(sys,uc,resultId,btnId,onDone){
+  const el=document.getElementById(resultId),btn=document.getElementById(btnId);
+  el.style.display='block';el.innerHTML='<span class="spinner"></span>AI 分析中，请稍候...';btn.disabled=true;
+  try{
+    const resp=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,system:sys,messages:[{role:'user',content:uc}]})});
+    const data=await resp.json();
+    const text=(data.content||[]).map(c=>c.text||'').join('');
+    if(onDone)onDone(text,el);else el.innerHTML=fmt(text);
+  }catch(e){el.textContent='请求失败，请检查网络后重试。';}
+  btn.disabled=false;
+}
+function fmt(t){
+  return t
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^#{1,3}\s+(.+)$/gm,'<h3>$1</h3>')
+    .replace(/^[-•]\s+(.+)$/gm,'<div style="display:flex;gap:8px;margin-bottom:4px"><span style="color:var(--text3);flex-shrink:0">·</span><span>$1</span></div>')
+    .replace(/\n\n/g,'</p><p style="margin-bottom:8px">').replace(/\n/g,'<br>');
+}
+const SYS=`你是一位专注中国医疗大健康AI行业的职业转型顾问。用户是有医学背景（医学生、医生、护士、药师等）想转行进入医疗AI/数字健康行业的人群。
+中国医疗AI主要公司：联影医疗、推想科技、数坤科技、医准智能、Airdoc、腾讯觅影、阿里健康、京东健康、平安好医生、微医、丁香园、碳云智能、零氪科技、森亿智能等。
+求职平台：Boss直聘、猎聘、拉勾、智联招聘、脉脉。
+国内薪资参考：医疗AI产品经理15-30k/月；临床数据分析师12-20k；医学信息化顾问12-25k；算法工程师20-40k；BD岗位12-25k+提成；内容运营10-18k。
+中国医疗AI落地场景：影像AI辅助诊断、电子病历结构化、智慧医院、慢病管理、互联网医院、基因检测、手术机器人、医保控费。
+请用简体中文回答，结合中国市场实际情况，不要提及国外公司或平台。`;
+
+function runMatch(){
+  const jd=getJdPayload(),cv=getCvPayload();
+  if(!jd){alert('请填写或上传岗位JD');return;}
+  if(!cv){alert('请填写或上传你的简历');return;}
+  const uc=[{type:'text',text:'【岗位JD】'},...jd,{type:'text',text:'\n\n【我的简历】'},...cv];
+  callClaude(SYS+`\n分析医学背景求职者与目标岗位的匹配情况，输出：
+1.**匹配评分**：X/10分，附1-2句理由
+2.**核心匹配点**：3个，说明医学背景如何在此岗位发挥优势
+3.**主要差距**：2-3个需补强方向，给出国内学习资源（网易云课堂、得到、丁香园学院、Coursera中文等）
+4.**投递建议**：是否值得投递，如何在Boss直聘/猎聘简历和自我介绍中定位自己`,
+  uc,'match-result','match-btn',(text,el)=>{el.innerHTML=fmt(text);addScoreBar(el,text);});
+}
+function addScoreBar(el,text){
+  const m=text.match(/(\d+)\s*\/\s*10/);if(!m)return;
+  const s=parseInt(m[1]),c=s>=7?'var(--success)':s>=5?'var(--warning)':'var(--danger)';
+  const bar=document.createElement('div');bar.className='score-bar-wrap';
+  bar.innerHTML=`<span style="font-size:13px;color:var(--text2);min-width:46px">匹配度</span><div class="score-bar-track"><div class="score-bar-fill" style="width:${s*10}%;background:${c}"></div></div><span style="font-size:15px;font-weight:500;color:${c}">${s}/10</span>`;
+  el.prepend(bar);
+}
+function runResume(){
+  const cv=getCvPayload();if(!cv){alert('请填写或上传你的简历');return;}
+  const jd=getJdPayload();
+  const focus=document.getElementById('resume-focus').value.trim();
+  const uc=[...(jd?[{type:'text',text:'【目标JD】'},...jd,{type:'text',text:'\n\n'}]:[]),{type:'text',text:`【目标方向】${focus||'医疗AI行业'}\n\n【我的简历】`},...cv];
+  callClaude(SYS+`\n帮助求职者优化简历，使其更适合中国医疗AI行业，输出：
+1.**总体评价**：优缺点（2-3句，结合国内HR视角）
+2.**改写建议**：各模块（教育背景/工作经历/技能/项目）具体改写方向，突出医学+数据/AI/产品复合价值
+3.**优化后简历**：完整优化后简历文本，格式规范，适合投递Boss直聘/猎聘
+注意：强调医学背景作为核心竞争力，不要弱化临床经历。`,
+  uc,'resume-result','resume-btn',(text,el)=>{el.innerHTML=fmt(text);lastResumeText=text;document.getElementById('resume-dl-row').style.display='block';});
+}
+function runInterview(){
+  const jd=getJdPayload(),cv=getCvPayload();
+  if(!jd&&!cv){alert('请至少填写岗位JD或简历');return;}
+  const bg=document.getElementById('interview-bg').value.trim();
+  const round=document.getElementById('interview-round').value;
+  const map={hr:'HR初筛',tech:'技术/业务面试',final:'终面/总监面'};
+  const uc=[...(jd?[{type:'text',text:'【岗位JD】'},...jd,{type:'text',text:'\n\n'}]:[]),...(cv?[{type:'text',text:'【我的简历】'},...cv,{type:'text',text:'\n\n'}]:[]),{type:'text',text:`【补充背景】${bg||'无'}\n【面试轮次】${map[round]}`}];
+  callClaude(SYS+`\n根据岗位JD和候选人简历，为${map[round]}生成面试准备材料：
+1.**高频必考题**（5题）：每题附针对医学背景的回答思路，结合中国职场语境
+2.**行业认知题**（3题）：考察对中国医疗AI行业的了解（政策/市场/竞品）
+3.**转型问题**（2题）："为什么从临床转行"类问题的应对策略
+4.**加分话术**：1-2条在国内面试中特别有效的表达技巧`,
+  uc,'interview-result','interview-btn',(text,el)=>{el.innerHTML=fmt(text);});
+}
+function runGuide(){
+  const q=document.getElementById('guide-query').value.trim();if(!q){alert('请输入问题');return;}
+  callClaude(SYS+`\n简洁实用地回答以下问题，400字以内，结合中国医疗AI行业实际，包含薪资区间（人民币）、典型公司、入门路径、Boss直聘/猎聘求职建议等。`,
+  q,'guide-result','guide-btn',(text,el)=>{el.innerHTML=fmt(text);});
+}
+
+const ROLES=[
+  {title:'医疗AI产品经理',tags:['无需编程','15-30k/月'],desc:'规划AI产品需求，对接研发与临床，医学背景是核心门槛'},
+  {title:'临床数据分析师',tags:['入门友好','12-20k/月'],desc:'分析真实世界数据、电子病历，支持产品迭代与决策'},
+  {title:'医学信息化顾问',tags:['经验变现','12-25k/月'],desc:'驻场或咨询医院HIT/AI项目落地，临床资源直接变现'},
+  {title:'医疗AI算法工程师',tags:['需要编程','20-40k/月'],desc:'开发影像AI、NLP等模型，需Python/深度学习背景'},
+  {title:'健康科技BD/销售',tags:['不需技术','底薪+提成'],desc:'开拓医院/药企客户，有科室人脉则起步极快'},
+  {title:'医疗AI内容运营',tags:['适合小白','10-18k/月'],desc:'科普创作、社群运营、KOL合作，医学背景天然差异化'},
+];
+document.getElementById('guide-cards').innerHTML=ROLES.map(r=>`<div class="info-card"><h4>${r.title}</h4><p>${r.desc}</p><div style="margin-top:7px">${r.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`).join('');
+</script>
+</body>
+</html>
